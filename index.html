@@ -1,5 +1,55 @@
 <html>
 
-hello to audio to caption service.
+<body>
+
+<div id="caption">
+</div>
+
+<div id="interim">
+</div>
+
+</body>
 
 </html>
+
+<script type="text/javascript">
+
+const FINAL_STR_DOM = document.getElementById("caption")
+const INTERIM_STR_DOM = document.getElementById("interim")
+
+function update_caption(final_str, interim, confidence)
+{
+    FINAL_STR_DOM.textContent = final_str
+    INTERIM_STR_DOM.textContent = interim
+}
+
+let recognition = new webkitSpeechRecognition()
+recognition.continuous = true
+recognition.interimResults = true
+
+recognition.onresult = (e) => {
+    let interim = ""
+    let final_str = ""
+    let confidence = 0
+    let final_count = 0
+
+    for (let i = e.resultIndex; i < e.results.length; i++)
+    {
+        let result = e.results[i]
+        if (result.isFinal)
+        {
+            final_str += result[0].transcript
+            confidence += result[0].confidence
+            final_count += 1
+        }
+        else
+        {
+            interim += result[0].transcript
+        }
+    }
+
+    update_caption(final_str, interim, confidence)
+}
+recognition.start()
+
+</script>
